@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>CMT | Home</title>
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syncopate&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&family=Oswald:wght@200&display=swap" rel="stylesheet">
+	
+  <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+  <script src="animation.js"></script>
+  <script>
+    var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+	function init() {
+		canvas = document.getElementById("canvas");
+		anim_container = document.getElementById("animation_container");
+		dom_overlay_container = document.getElementById("dom_overlay_container");
+		var comp=AdobeAn.getComposition("F5BFA32B60552342B9A4AA99DC9D118B");
+		var lib=comp.getLibrary();
+		var loader = new createjs.LoadQueue(false);
+		loader.addEventListener("fileload", function(evt){handleFileLoad(evt,comp)});
+		loader.addEventListener("complete", function(evt){handleComplete(evt,comp)});
+		var lib=comp.getLibrary();
+		loader.loadManifest(lib.properties.manifest);
+	}
+	function handleFileLoad(evt, comp) {
+		var images=comp.getImages();	
+		if (evt && (evt.item.type == "image")) { images[evt.item.id] = evt.result; }	
+	}
+	function handleComplete(evt,comp) {
+		//This function is always called, irrespective of the content. You can use the variable "stage" after it is created in token create_stage.
+		var lib=comp.getLibrary();
+		var ss=comp.getSpriteSheet();
+		var queue = evt.target;
+		var ssMetadata = lib.ssMetadata;
+		for(i=0; i<ssMetadata.length; i++) {
+			ss[ssMetadata[i].name] = new createjs.SpriteSheet( {"images": [queue.getResult(ssMetadata[i].name)], "frames": ssMetadata[i].frames} )
+		}
+		exportRoot = new lib.animation();
+		stage = new lib.Stage(canvas);
+		stage.enableMouseOver();	
+		//Registers the "tick" event listener.
+		fnStartAnimation = function() {
+			stage.addChild(exportRoot);
+			createjs.Ticker.framerate = lib.properties.fps;
+			createjs.Ticker.addEventListener("tick", stage);
+		}	    
+		//Code to support hidpi screens and responsive scaling.
+		AdobeAn.makeResponsive(true,'both',false,1,[canvas,anim_container,dom_overlay_container]);	
+		AdobeAn.compositionLoaded(lib.properties.id);
+		fnStartAnimation();
+	}
+  </script>
+  
+  <style>
+  	.navbar-brand {
+		
+	}
+	.navbar-brand>img {
+		height: 50px;
+		margin-top: -15px;
+	}
+	
+	a {
+    	color: #00d5ff;
+    }
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #a9a9a9;
+      color: black;
+      padding: 4px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height:auto;} 
+    }
+    
+    body {
+      margin: 0;
+      font-family: Montserrat, sans-serif;
+      color: white;
+      background-color: black;
+    }
+
+    .topnav {
+	  margin-top:15px;
+      overflow: hidden;
+      background-color: black;
+      font-family: Syncopate, sans-serif;
+      border-radius: 10px;
+    }
+
+    .topnav a {
+      float: left;
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+      border-radius: 10px;
+    }
+
+    .topnav a:hover {
+      background-color: gray;
+      color: black;
+    }
+
+    .topnav a.active {
+      background-color: #a9a9a9;
+      color: white;
+    }
+
+    .topnav .icon {
+      display: none;
+    }
+
+    @media screen and (max-width: 600px) {
+      .topnav a:not(:first-child) {display: none;}
+      .topnav a.icon {
+        float: right;
+        display: block;
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      .topnav.responsive {position: relative;}
+      .topnav.responsive .icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+      .topnav.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+      }
+    }
+	
+	#animation_container {
+	 position:center;
+	 margin:auto;
+	 left:0;right:0;
+	 top:0;bottom:0;
+    }
+    
+  </style>
+</head>
+
+<body onload="init();">
+
+<div class="topnav" id="myTopnav">
+  <a class="navbar-brand" href="index.html"><img src="images/logo.png" alt = "College Mall Theaters Company Logo"></img></a>
+  <a href="index.html" class="active">Home</a>
+  <a href="showtimes.html">Showtimes</a>
+  <a href="concessions.html">Concessions</a>
+  <a href="trailers.html">Trailers</a>
+  <a href="parties.html">Parties</a>
+  <a href="about_us.html">About Us</a>
+  <a href="contact_us.html">Contact Us</a>
+  <a href="site_map.html">Site Map</a>
+  <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+    <i class="fa fa-bars"></i>
+  </a>
+</div>
+  
+<div class="container-fluid text-center">    
+  <div class="row content">
+  	<div class="col-sm-12 text-left">
+      <hr>
+      <h1 class="text-center">Introducing the best <strike>website</strike> movie theater experience!</h1>
+	  <div class="center" id="animation_container" style="background-color:rgba(255, 255, 255, 1.00); width:800px; height:600px">
+		<canvas id="canvas" width="800" height="600" style="position: absolute; display: block; background-color:rgba(255, 255, 255, 1.00);"></canvas>
+		<div id="dom_overlay_container" style="pointer-events:none; overflow:hidden; width:800px; height:600px; position: absolute; left: 0px; top: 0px; display: block;"></div>
+	  </div>
+    </div>
+  </div>
+</div>
+<hr>
+<div class="container-fluid text-center">    
+  <h1>Current Movies</h1>
+  <br>
+  <div class="row">
+    <div class="col-sm-3">
+      <a href="https://www.imdb.com/title/tt1877830/"><img src="images/batman_poster.jpg" class="img-center" style="height:500px" alt="The Batman Movie Poster" href="https://www.imdb.com/title/tt1877830/"></a>
+      <p style="font-weight:bold;font-size:20px;padding-top:10px">The Batman</p>
+	  <p>Released on March 4</p>
+	  <p>Runtime: 2h 56m</p>
+	  <p>Rating: PG13</p>
+    </div>
+    <div class="col-sm-3"> 
+      <a href="https://www.imdb.com/title/tt4123432/"><img src="images/secrets_poster.jpg" class="img-center" style="height:500px" alt="The Secrets of Dumbledore Movie Poster"></a>
+      <p style="font-weight:bold;font-size:20px;padding-top:10px">The Secrets of Dumbledore</p>
+	  <p>Released on April 15</p>
+	  <p>Runtime: 2h 23m</p>
+	  <p>Rating: PG13</p>
+    </div>
+    <div class="col-sm-3">
+      <a href="https://www.imdb.com/title/tt12412888/"><img src="images/sonic_poster.jpg" class="img-center" style="height:500px" alt="Sonic 2 Movie Poster"></a>
+      <p style="font-weight:bold;font-size:20px;padding-top:10px">Sonic 2</p>
+	  <p>Released on April 8</p>
+	  <p>Runtime: 2h 2m</p>
+	  <p>Rating: PG</p>
+    </div>
+	<div class="col-sm-3">
+      <a href="https://www.imdb.com/title/tt8115900/"><img src="images/badguys_poster.jpg" class="img-center" style="height:500px" alt="Bad Guys Movie Poster"></a>
+      <p style="font-weight:bold;font-size:20px;padding-top:10px">Bad Guys</p>
+	  <p>Released on April 22</p>
+	  <p>Runtime: 2h 56m</p>
+	  <p>Rating: PG</p>
+    </div>
+  </div>
+</div>
+<hr>
+<div class="container-fluid text-center">    
+  <h1>Upcoming Movies</h1>
+  <br>
+  <div class="row">
+    <div class="col-sm-3"> 
+      <a href="https://www.imdb.com/title/tt9419884/"><img src="images/drstrange_poster.jpg" class="img-center" style="height:500px" alt="Doctor Strange in the Multiverse of Madness Movie Poster"></a>
+      <p style="font-weight:bold;font-size:20px;padding-top:10px">Doctor Strange in the Multiverse of Madness</p>
+	  <p>Releases on May 6</p>
+	  <p>Runtime: 2h 6m</p>
+	  <p>Rating: PG13</p>
+    </div>
+	<div class="col-sm-3">
+      <a href="https://www.imdb.com/title/tt8041270/"><img src="images/jurassic_poster.jpg" class="img-center" style="height:500px" alt="Jurassic World Dominion Movie Poster"></a>
+      <p style="font-weight:bold;font-size:20px;padding-top:10px">Jurassic World Dominion</p>
+	  <p>Releases on June 10</p>
+	  <p>Runtime: 2h 26m</p>
+	  <p>Rating: PG13</p>
+    </div>
+    <div class="col-sm-3">
+      <a href="https://www.imdb.com/title/tt10298810/"><img src="images/Lightyear_poster.jpg" class="img-center" style="height:500px" alt="Lightyear Movie Poster"></a>
+      <p style="font-weight:bold;font-size:20px;padding-top:10px">Lightyear</p>
+	  <p>Releases on June 17</p>
+	  <p>Runtime: 1h 40m</p>
+	  <p>Rating: PG</p>
+    </div>
+	<div class="col-sm-3">
+      <a href="https://www.imdb.com/title/tt10648342/"><img src="images/thor_poster.jpg" class="img-center" style="height:500px" alt="Thor: Love and Thunder Movie Poster"></a>
+      <p style="font-weight:bold;font-size:20px;padding-top:10px">Thor: Love and Thunder</p>
+	  <p>Releases on July 8</p>
+	  <p>Runtime: 2h 13m</p>
+	  <p>Rating: PG13</p>
+    </div>
+  </div>
+</div>
+<hr>
+<div class="text-center">
+<a href="#myTopnav" style="font-weight:bold">Back to Top</a>
+<br>
+<br>
+</div>
+
+<footer class="container-fluid text-left">
+  <p>Disclaimer: This site is a functional site with materials used under Fair Use and restricted from further use.</p>
+  <p>Last Updated: 5/9/2022</p>
+</footer>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
+}
+</script>
+
+</body>
+</html>
